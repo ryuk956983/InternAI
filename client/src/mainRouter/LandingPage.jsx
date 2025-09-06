@@ -135,7 +135,7 @@ const LandingPage = ({ setloading }) => {
 
             </div>
             <img className='absolute top-0 w-full h-full opacity-30' src="https://cdn.pixabay.com/photo/2016/11/21/16/27/laptop-1846277_1280.jpg" alt="" />
-            {internships && <section className='grid p-10 mt-34  grid-cols-3 max-lg:grid-cols-2 max-sm:grid-cols-1 gap-8 max-sm:p-4'>
+            {internships && <section className='grid p-10 max-sm:mt-34 mt-60 grid-cols-3 max-lg:grid-cols-2 max-sm:grid-cols-1 gap-8 max-sm:p-4'>
 
 
                 {
