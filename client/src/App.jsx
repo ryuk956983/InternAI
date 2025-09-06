@@ -6,7 +6,7 @@ const App = () => {
   
   const [loading, setloading] = useState(false);
   return (
-    <div className='h-full '>
+    <div className='h-screen overflow-scroll'>
  {loading &&  <Spinner />}
       <Navbar />
       <LandingPage setloading={setloading}/>
