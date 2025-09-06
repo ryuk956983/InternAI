@@ -1,9 +1,12 @@
+
 import React, { useEffect, useState } from 'react'
 import TextField from '@mui/material/TextField';
 import axios from "axios"
 import Autocomplete from '@mui/material/Autocomplete';
+
 import InternshipCard from '../components/InternshipCard';
-const LandingPage = ({setloading}) => {
+
+const LandingPage = ({ setloading }) => {
 
     const [skills, setskills] = useState([]);
     const [location, setlocation] = useState([]);
@@ -40,7 +43,7 @@ const LandingPage = ({setloading}) => {
     const fetchlocation = async () => {
         await axios.get("https://raw.githubusercontent.com/iaseth/data-for-india/master/data/readable/districts.json")
             .then(res => {
-                setlocation(res.data.districts.map((el, ind) => el.district))
+                setlocation(res.data.districts.map((el, ind) => { return { id: ind + 1, label: el.district,show:el.district+"-"+el.stateCode } }))
 
             }).catch(err => {
                 console.error(err)
@@ -49,7 +52,9 @@ const LandingPage = ({setloading}) => {
 
     useEffect(() => {
         fetchlocation();
+
     }, [])
+
 
     const hanndleSubmit = async () => {
         if (selectedSkills && selectedexperience && selectedLocation) {
@@ -64,7 +69,7 @@ const LandingPage = ({setloading}) => {
                 .then(res => {
                     setinternships(res.data.internships);
                     setloading(false);
-        })
+                })
                 .catch(err => console.error(err))
 
         } else {
@@ -77,7 +82,7 @@ const LandingPage = ({setloading}) => {
         <main className='h-[91.2%] relative  grid place-items-center  bg-black'>
 
             <div className='relative text-white h-[100vh] p-10  flex-col z-99 flex justify-center gap-6'>
-                <h1 className='text-6xl font-bold text-center text-white'>Shape Your Future With <br /> <span className='text-[#ff7500]'> PM Internship Portal</span></h1>
+                <h1 className='text-6xl max-md:text-4xl font-bold text-center text-white'>Shape Your Future With <br /> <span className='text-[#ff7500]'> PM Internship Portal</span></h1>
                 <div className='flex flex-col gap-6'>
                     <div className='flex gap-2'>
                         <Autocomplete
@@ -106,22 +111,26 @@ const LandingPage = ({setloading}) => {
                             onChange={(event, newValue) => setselectedexperience(newValue)}
                             className='bg-white rounded-md flex-1'
                             renderInput={(params) => <TextField {...params} label="Experience" />}
-                        />
-                        <select  onChange={(e) => { setselectedlocation(e.target.value) }} className='flex-1 bg-white py-4 text-gray-700 rounded-md p-2 outline-none '>
-                            <option value="">Select Location</option>
-                            {location.map((el, ind) => {
-                                return <option key={ind} value={el}>{el}</option>
-                            })}
-                        </select>
+                        />{location &&
+                            <Autocomplete
+                               
+                                options={location}
+                                getOptionLabel={(option) => option?.show || ""}
+                                
+                                isOptionEqualToValue={(option, value) => option.id === value.id}
+                                onChange={(event, newValue) => setselectedlocation(newValue.label)}
+                                className='bg-white rounded-md flex-1'
+                                renderInput={(params) => <TextField {...params} label="Location" />}
+                            />}
                         <button onClick={() => hanndleSubmit()} className='flex-1 py-4 bg-[#ff7500] rounded-md text-xl font-semibold cursor-pointer'>Search</button>
                     </div>
                 </div>
 
             </div>
-            
+
             <section className='grid p-10  grid-cols-3 max-lg:grid-cols-2 max-sm:grid-cols-1 gap-8'>
 
-                
+
                 {
                     internships && internships.map((el, ind) => {
                         return <InternshipCard data={el} key={ind + 1} />

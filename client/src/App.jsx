@@ -6,7 +6,7 @@ const App = () => {
   
   const [loading, setloading] = useState(false);
   return (
-    <div className='h-screen '>
+    <div className='h-full '>
  {loading &&  <Spinner />}
       <Navbar />
       <LandingPage setloading={setloading}/>
