@@ -25,45 +25,36 @@ const LandingPage = ({ setloading }) => {
         "3+ Years"
     ]
 
-    const fetchskills = async (string) => {
-        await axios.get(`https://api.apilayer.com/skills?q=${string}`, {
-            headers: {
-                apikey: "EZWLjd3EYj39qTBHXtpWBYeeVQ16ojlD"
-            }
-        })
-            .then(res => {
-                setskills(res.data)
-            }).catch(err => {
-                console.error(err)
-            })
-
-
-    }
 
     const fetchlocation = async () => {
-        await axios.get("https://raw.githubusercontent.com/iaseth/data-for-india/master/data/readable/districts.json")
-            .then(res => {
-                setlocation(res.data.districts.map((el, ind) => { return { id: ind + 1, label: el.district, show: el.district + "-" + el.stateCode } }))
+        await axios.get("/files/location.json")
+            .then(res => setlocation(res.data))
+            .catch(err => alert(err.message));
+    }
 
-            }).catch(err => {
-                console.error(err)
-            })
+    const fetchskills = async () => {
+        await axios.get('/files/skills.json')
+            .then(res => setskills(res.data))
+            .catch(err => alert(err.message));
     }
 
     useEffect(() => {
+        fetchskills();
         fetchlocation();
 
     }, [])
+
 
 
     const hanndleSubmit = async () => {
         if (selectedSkills && selectedexperience && selectedLocation) {
             setloading(true);
             const details = {
-                skills: selectedSkills,
+                skills: [selectedSkills.map(el=> el.skill)],
                 experience: selectedexperience,
                 location: selectedLocation
             }
+            
 
             await axios.post(API_URL + "/data/getrecommendation", details)
                 .then(res => {
@@ -77,7 +68,7 @@ const LandingPage = ({ setloading }) => {
 
 
                 })
-                .catch(err => console.error(err))
+                .catch(err =>alert(err.message))
 
         } else {
             alert("Enter all the Details")
@@ -96,13 +87,12 @@ const LandingPage = ({ setloading }) => {
                             multiple
                             value={selectedSkills}
                             onChange={(event, newValue) => setSelectedSkills(newValue)}
-                            onInputChange={(e) => { e.target.value != "" && fetchskills(e.target.value) }}
                             limitTags={5}
                             id="multiple-limit-tags"
                             options={skills}
                             className='bg-white rounded-md w-full'
-                            getOptionLabel={(option) => option}
-
+                            getOptionLabel={(option) => option.skill}
+                            isOptionEqualToValue={(option, value) => option.id === value.id}
                             renderInput={(params) => (
                                 <TextField {...params} label="Skills" />
                             )}
@@ -122,10 +112,10 @@ const LandingPage = ({ setloading }) => {
                             <Autocomplete
 
                                 options={location}
-                                getOptionLabel={(option) => option?.show || ""}
+                                getOptionLabel={(option) => option?.city || ""}
 
                                 isOptionEqualToValue={(option, value) => option.id === value.id}
-                                onChange={(event, newValue) => setselectedlocation(newValue.label)}
+                                onChange={(event, newValue) => setselectedlocation(newValue.city)}
                                 className='bg-white rounded-md flex-1'
                                 renderInput={(params) => <TextField {...params} label="Location" />}
                             />}
